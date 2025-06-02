@@ -13,3 +13,4 @@ data class App(
     val blockedStart: Int = 0,
     val blockedEnd: Int = 1439
 )
+ 

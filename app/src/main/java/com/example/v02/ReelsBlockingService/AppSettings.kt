@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AppSettings(
-    val instagram: App = App()
+    val instagram: App = App() 
 )
 
 @Serializable
@@ -13,3 +13,4 @@ data class App(
     val blockedStart: Int = 0,
     val blockedEnd: Int = 1439
 )
+ 

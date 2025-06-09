@@ -1,4 +1,4 @@
-package com.example.v02
+package com.example.v02.ReelsBlockingService
 
 import kotlinx.serialization.Serializable
 

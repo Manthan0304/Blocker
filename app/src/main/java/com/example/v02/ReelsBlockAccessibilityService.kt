@@ -10,6 +10,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import android.util.Log
 import com.example.v02.ReelsBlockingService.AppSettings
+import com.example.v02.ReelsBlockingService.BlockMode
 import com.example.v02.ReelsBlockingService.DataStoreManager
 import java.util.TimeZone
 
@@ -33,7 +34,10 @@ class ReelsBlockAccessibilityService : AccessibilityService() {
         serviceScope.launch {
             dataStore.appSettings.collect { latest ->
                 settings = latest
-                Log.d(TAG, "Settings updated: Instagram Reels blocked = ${latest.instagram.reelsBlocked}")
+                Log.d(
+                    TAG,
+                    "Settings updated: Instagram Reels blocked = ${latest.instagram.reelsBlocked}"
+                )
             }
         }
 
@@ -48,8 +52,17 @@ class ReelsBlockAccessibilityService : AccessibilityService() {
 
         if (pkg == "com.instagram.android") {
             val insta = settings.instagram
-            if (insta.reelsBlocked && isWithinInterval(insta.blockedStart, insta.blockedEnd, nowMin)) {
-                blockInstagramReels(root)
+            if (isWithinInterval(insta.blockedStart, insta.blockedEnd, nowMin)) {
+                if (insta.reelsBlocked) {
+                    blockInstagramReels(root)
+                }
+                if (insta.storiesBlocked) {
+                    blockInstagramStories(root)
+                }
+                if (insta.exploreBlocked) {
+
+                    blockInstagramExplore(root)
+                }
             }
         }
     }
@@ -107,4 +120,42 @@ class ReelsBlockAccessibilityService : AccessibilityService() {
             Log.d(TAG, "Attempted to click feed tab: $success")
         }
     }
+
+    private fun blockInstagramStories(root: AccessibilityNodeInfo) {
+        // Try to detect the story container
+        val storyView = root.findAccessibilityNodeInfosByViewId(
+            "com.instagram.android:id/reel_viewer_root" // <- this may vary by version
+        ).firstOrNull()
+
+        if (storyView != null) {
+            Log.d(TAG, "Stories detected! Attempting to exit...")
+
+            // Press back to exit story
+            performGlobalAction(GLOBAL_ACTION_BACK)
+
+            // OR switch to feed tab (if available)
+            val feedTab = root.findAccessibilityNodeInfosByViewId(
+                "com.instagram.android:id/feed_tab"
+            ).firstOrNull()
+            exitTheDoom(feedTab)
+        }
+    }
+
+    private fun blockInstagramExplore(root: AccessibilityNodeInfo) {
+        val exploreTab = root.findAccessibilityNodeInfosByViewId(
+            "com.instagram.android:id/search_tab"
+        ).firstOrNull()
+
+        if (exploreTab != null && exploreTab.isSelected) {
+            Log.d(TAG, "Explore tab is active! Attempting to exit...")
+
+            val feedTab = root.findAccessibilityNodeInfosByViewId(
+                "com.instagram.android:id/feed_tab"
+            ).firstOrNull()
+
+            exitTheDoom(feedTab)
+        }
+    }
+
+
 }

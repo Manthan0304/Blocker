@@ -9,11 +9,28 @@ class DataStoreManager(context: Context) {
 
     val appSettings: Flow<AppSettings> = dataStore.data
 
-    suspend fun toggleInstagramReelsBlocking(enabled: Boolean) {
+    suspend fun setInstagramReelsBlocking(enabled: Boolean) {
         dataStore.updateData { currentSettings ->
             currentSettings.copy(
                 instagram = currentSettings.instagram.copy(reelsBlocked = enabled)
             )
         }
     }
+
+    suspend fun setInstagramStoriesBlocking(enabled: Boolean) {
+        dataStore.updateData { currentSettings ->
+            currentSettings.copy(
+                instagram = currentSettings.instagram.copy(storiesBlocked = enabled)
+            )
+        }
+    }
+
+    suspend fun toggleInstagramExploreBlocking(enabled: Boolean) {
+        dataStore.updateData { currentSettings ->
+            currentSettings.copy(
+                instagram = currentSettings.instagram.copy(exploreBlocked = enabled)
+            )
+        }
+    }
+
 }

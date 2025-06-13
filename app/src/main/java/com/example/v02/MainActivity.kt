@@ -34,6 +34,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.v02.ReelsBlockingService.MainViewModel
 import kotlinx.coroutines.delay
 import android.view.accessibility.AccessibilityManager
+import com.example.v02.ReelsBlockingService.BlockMode
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val viewModel = MainViewModel(application = application)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     this,
@@ -59,7 +61,7 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                AppLimitApp()
+                MainScreen(viewModel)
             }
         }
     }
@@ -95,7 +97,6 @@ class MainActivity : ComponentActivity() {
         return try {
             val accessibilityManager = getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
 
-            // Get our service component name
             val expectedServiceName = ComponentName(this, "com.example.v02.timelimit.AppBlockerAccessibilityService")
 
             // Method 1: Check using enabled services list
@@ -167,11 +168,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     val isReelsBlockingEnabled by viewModel.isReelsBlockingEnabled.collectAsState(initial = false)
+    val isStoriesBlockingEnabled by viewModel.isStoriesBlockingEnabled.collectAsState(initial = false)
 
     Column(
         modifier = Modifier
@@ -180,11 +181,29 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Reels Blocker",
+            text = "Instagram Blocker",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 24.dp)
         )
+
+        // Reels Block Card
+        BlockCard(
+            title = "Block Instagram Reels",
+            description = "Automatically navigates away from Reels to keep you focused.",
+            checked = isReelsBlockingEnabled,
+            onToggle = { viewModel.setReelsBlockingEnabled(it) }
+        )
+
+        // Stories Block Card
+        BlockCard(
+            title = "Block Instagram Stories",
+            description = "Automatically exits Stories view to avoid distractions.",
+            checked = isStoriesBlockingEnabled,
+            onToggle = { viewModel.setStoriesBlockingEnabled(it) }
+        )
+
+        val isExploreBlockingEnabled by viewModel.isExploreBlockingEnabled.collectAsState(initial = false)
 
         Card(
             modifier = Modifier
@@ -196,7 +215,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = "Block Instagram Reels",
+                    text = "Block Instagram Explore",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -204,7 +223,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Automatically navigates away from Reels to keep you focused.",
+                    text = "Automatically navigates away from Explore to keep you focused.",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -217,29 +236,57 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Enable Reels Blocking",
+                        text = "Enable Explore Blocking",
                         fontSize = 16.sp
                     )
 
                     Switch(
-                        checked = isReelsBlockingEnabled,
+                        checked = isExploreBlockingEnabled,
                         onCheckedChange = { enabled ->
-                            viewModel.setReelsBlockingEnabled(enabled)
+                            viewModel.setExploreBlockingEnabled(enabled)
                         }
                     )
                 }
             }
         }
 
+
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                context.startActivity(intent)
-            }
-        ) {
+        Button(onClick = {
+            context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        }) {
             Text("Enable Accessibility Service")
+        }
+    }
+}
+
+@Composable
+fun BlockCard(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onToggle: (Boolean) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(title, fontSize = 18.sp, fontWeight = FontWeight.Medium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(description, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Enable", fontSize = 16.sp)
+                Switch(checked = checked, onCheckedChange = onToggle)
+            }
         }
     }
 }

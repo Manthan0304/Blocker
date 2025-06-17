@@ -33,4 +33,22 @@ class DataStoreManager(context: Context) {
         }
     }
 
+    suspend fun setInstagramBlockTime(start: Int, end: Int) {
+        dataStore.updateData { currentSettings ->
+            currentSettings.copy(
+                instagram = currentSettings.instagram.copy(
+                    blockedStart = start,
+                    blockedEnd = end
+                )
+            )
+        }
+    }
+    suspend fun setFacebookReelsBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                facebook = current.facebook.copy(reelsBlocked = enabled)
+            )
+        }
+    }
+
 }

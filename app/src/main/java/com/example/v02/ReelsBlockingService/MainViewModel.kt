@@ -37,5 +37,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             dataStoreManager.toggleInstagramExploreBlocking(enabled)
         }
     }
+    fun setInstagramBlockTime(start: Int, end: Int) {
+        viewModelScope.launch {
+            dataStoreManager.setInstagramBlockTime(start, end)
+        }
+    }
+    val isFBReelsBlockingEnabled: Flow<Boolean> = dataStoreManager.appSettings.map {
+        it.facebook.reelsBlocked
+    }
 
+    fun setFBReelsBlockingEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStoreManager.setFacebookReelsBlocking(enabled)
+        }
+    }
 }

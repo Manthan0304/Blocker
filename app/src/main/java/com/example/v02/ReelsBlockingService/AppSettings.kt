@@ -4,8 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AppSettings(
-    val instagram: App = App() 
+    val instagram: App = App(),
+    val facebook: App = App()
 )
+
 
 @Serializable
 enum class BlockMode {

@@ -34,6 +34,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.v02.ReelsBlockingService.MainViewModel
 import kotlinx.coroutines.delay
 import android.view.accessibility.AccessibilityManager
+import androidx.compose.foundation.lazy.LazyColumn
 import com.example.v02.ReelsBlockingService.BlockMode
 import kotlinx.coroutines.launch
 
@@ -173,93 +174,74 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val context = LocalContext.current
     val isReelsBlockingEnabled by viewModel.isReelsBlockingEnabled.collectAsState(initial = false)
     val isStoriesBlockingEnabled by viewModel.isStoriesBlockingEnabled.collectAsState(initial = false)
+    val isExploreBlockingEnabled by viewModel.isExploreBlockingEnabled.collectAsState(initial = false)
+    val isFBReelsBlockingEnabled by viewModel.isFBReelsBlockingEnabled.collectAsState(initial = false)
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Instagram Blocker",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(vertical = 24.dp)
-        )
-
-        // Reels Block Card
-        BlockCard(
-            title = "Block Instagram Reels",
-            description = "Automatically navigates away from Reels to keep you focused.",
-            checked = isReelsBlockingEnabled,
-            onToggle = { viewModel.setReelsBlockingEnabled(it) }
-        )
-
-        // Stories Block Card
-        BlockCard(
-            title = "Block Instagram Stories",
-            description = "Automatically exits Stories view to avoid distractions.",
-            checked = isStoriesBlockingEnabled,
-            onToggle = { viewModel.setStoriesBlockingEnabled(it) }
-        )
-
-        val isExploreBlockingEnabled by viewModel.isExploreBlockingEnabled.collectAsState(initial = false)
-
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Block Instagram Explore",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Automatically navigates away from Explore to keep you focused.",
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Enable Explore Blocking",
-                        fontSize = 16.sp
-                    )
-
-                    Switch(
-                        checked = isExploreBlockingEnabled,
-                        onCheckedChange = { enabled ->
-                            viewModel.setExploreBlockingEnabled(enabled)
-                        }
-                    )
-                }
-            }
+        item {
+            Text(
+                text = "Instagram Blocker",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 24.dp)
+            )
         }
 
+        item {
+            BlockCard(
+                title = "Block Instagram Reels",
+                description = "Automatically navigates away from Reels to keep you focused.",
+                checked = isReelsBlockingEnabled,
+                onToggle = { viewModel.setReelsBlockingEnabled(it) }
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        item {
+            BlockCard(
+                title = "Block Instagram Stories",
+                description = "Automatically exits Stories view to avoid distractions.",
+                checked = isStoriesBlockingEnabled,
+                onToggle = { viewModel.setStoriesBlockingEnabled(it) }
+            )
+        }
 
-        Button(onClick = {
-            context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-        }) {
-            Text("Enable Accessibility Service")
+        item {
+            BlockCard(
+                title = "Block Instagram Explore",
+                description = "Automatically navigates away from Explore to keep you focused.",
+                checked = isExploreBlockingEnabled,
+                onToggle = { viewModel.setExploreBlockingEnabled(it) }
+            )
+        }
+
+        item {
+            BlockCard(
+                title = "Block Facebook Reels",
+                description = "Automatically navigates away from Facebook Reels to help you stay focused.",
+                checked = isFBReelsBlockingEnabled,
+                onToggle = { viewModel.setFBReelsBlockingEnabled(it) }
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = {
+                context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+            }) {
+                Text("Enable Accessibility Service")
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
+
 
 @Composable
 fun BlockCard(

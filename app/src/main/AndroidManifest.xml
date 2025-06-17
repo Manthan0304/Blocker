@@ -64,7 +64,7 @@
 
         <!-- Accessibility service to block reels -->
         <service
-            android:name=".ReelsBlockAccessibilityService"
+            android:name=".InstagramBlockAccessibilityService"
             android:exported="false"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>

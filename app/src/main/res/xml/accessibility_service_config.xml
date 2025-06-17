@@ -3,6 +3,6 @@
     android:description="@string/accessibility_service_description"
     android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged"
     android:accessibilityFlags="flagReportViewIds"
-    android:packageNames="com.instagram.android"
-    android:notificationTimeout="100"
-    android:canRetrieveWindowContent="true" />
+    android:packageNames="com.instagram.android,com.facebook.katana"
+    android:canRetrieveWindowContent="true"
+    android:notificationTimeout="100" />

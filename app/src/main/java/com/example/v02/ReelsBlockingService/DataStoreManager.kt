@@ -57,4 +57,12 @@ class DataStoreManager(context: Context) {
             )
         }
     }
+    suspend fun setFacebookStoriesBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                facebook = current.facebook.copy(storiesBlocked = enabled)
+            )
+        }
+    }
+
 }

@@ -31,11 +31,10 @@ import android.content.ComponentName
 import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.lifecycleScope
-import com.example.v02.ReelsBlockingService.MainViewModel
 import kotlinx.coroutines.delay
 import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.lazy.LazyColumn
-import com.example.v02.ReelsBlockingService.BlockMode
+import com.example.v02.ReelsBlockingService.MainViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -177,6 +176,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val isExploreBlockingEnabled by viewModel.isExploreBlockingEnabled.collectAsState(initial = false)
     val isFBReelsBlockingEnabled by viewModel.isFBReelsBlockingEnabled.collectAsState(initial = false)
     val isFBMarketplaceBlockingEnabled by viewModel.isFBMarketplaceBlockingEnabled.collectAsState(initial = false)
+    val isFBStoriesBlockingEnabled by viewModel.isFBStoriesBlockingEnabled.collectAsState(initial = false)
 
     LazyColumn(
         modifier = Modifier
@@ -251,6 +251,17 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             )
 
         }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            BlockCard(
+                title = "Block Facebook Stories",
+                description = "Automatically closes Facebook Stories to help reduce distractions.",
+                checked = isFBStoriesBlockingEnabled,
+                onToggle = { viewModel.setFBStoriesBlockingEnabled(it) }
+            )
+        }
+
     }
 }
 

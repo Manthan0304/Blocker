@@ -20,12 +20,11 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
     private lateinit var dataStore: DataStoreManager
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-
     @Volatile
     private var settings = AppSettings()
 
     private var lastActionTime = 0L
-    private val debounceMillis = 3000L
+    private val debounceMillis = 200L
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -34,7 +33,7 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
         serviceScope.launch {
             dataStore.appSettings.collect { latest ->
                 settings = latest
-                Log.d(TAG, "Settings updated")
+                Log.d(TAG, "Settings updated: Instagram reels=${latest.instagram.reelsBlocked}, FB reels=${latest.facebook.reelsBlocked}, FB marketplace=${latest.facebook.marketplaceBlocked}")
             }
         }
 
@@ -45,6 +44,8 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
         val pkg = event?.packageName?.toString() ?: return
         val root = rootInActiveWindow ?: return
         val nowMin = currentMinuteOfDay()
+
+        Log.d(TAG, "Received event from package: $pkg")
 
         when (pkg) {
             "com.instagram.android" -> {
@@ -57,8 +58,76 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
             }
 
             "com.facebook.katana" -> {
-                blockTabByDescription(root, "Video, tab 2 of 6", "Home, tab 1 of 6")
+                logAllDescriptions(root) // For debugging
+
+                val fb = settings.facebook
+                if (isWithinInterval(fb.blockedStart, fb.blockedEnd, nowMin)) {
+                    if (fb.reelsBlocked) blockFacebookReels(root)
+                    if (fb.marketplaceBlocked) blockFacebookMarketplace(root)
+                }
             }
+        }
+    }
+
+    private fun blockFacebookReels(root: AccessibilityNodeInfo) {
+        // Check if we're on Video tab by looking for Video tab being selected
+        val videoTab = findNodeByDesc(root, "Video")
+
+        if (videoTab?.isSelected == true) {
+            Log.d(TAG, "Facebook Video tab detected, redirecting to Home")
+            val homeTab = findNodeByDesc(root, "Home")
+            exitTheFacebookDoom(homeTab, "Facebook Video tab blocked")
+        }
+    }
+
+    private fun blockFacebookMarketplace(root: AccessibilityNodeInfo) {
+        // Check if we're on Marketplace tab by looking for Marketplace tab being selected
+        val marketplaceTab = findNodeByDesc(root, "Marketplace")
+
+        if (marketplaceTab?.isSelected == true) {
+            Log.d(TAG, "Facebook Marketplace tab detected, redirecting to Home")
+            val homeTab = findNodeByDesc(root, "Home")
+            exitTheFacebookDoom(homeTab, "Facebook Marketplace blocked")
+        }
+    }
+
+    private fun exitTheFacebookDoom(tab: AccessibilityNodeInfo?, reason: String) {
+        val now = System.currentTimeMillis()
+        if (now - lastActionTime < debounceMillis) return
+        lastActionTime = now
+
+        val success = tab?.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        Log.d(TAG, "$reason: Attempted to click home tab: $success")
+    }
+
+    private fun findNodeByDesc(node: AccessibilityNodeInfo?, desc: String): AccessibilityNodeInfo? {
+        if (node == null) return null
+
+        val description = node.contentDescription?.toString()?.trim()
+        if (description != null && description.contains(desc, ignoreCase = true)) {
+            return node
+        }
+
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i)
+            val result = findNodeByDesc(child, desc)
+            if (result != null) return result
+        }
+
+        return null
+    }
+
+    private fun logAllDescriptions(node: AccessibilityNodeInfo?, depth: Int = 0) {
+        if (node == null) return
+
+        val indent = " ".repeat(depth * 2)
+        val desc = node.contentDescription?.toString()
+        if (!desc.isNullOrBlank()) {
+            Log.d(TAG, "$indent- Desc: \"$desc\", Selected: ${node.isSelected}")
+        }
+
+        for (i in 0 until node.childCount) {
+            logAllDescriptions(node.getChild(i), depth + 1)
         }
     }
 
@@ -71,7 +140,7 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
         Log.d(TAG, "Service destroyed")
     }
 
-    // === Instagram Functions ===
+    // === Instagram Functions (keeping these unchanged as requested) ===
 
     private fun blockInstagramReels(root: AccessibilityNodeInfo) {
         val reelView = root.findAccessibilityNodeInfosByViewId(
@@ -123,43 +192,7 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
         Log.d(TAG, "$reason: Attempted to click feed tab: $success")
     }
 
-    // === Facebook Function ===
-
-    private fun blockTabByDescription(root: AccessibilityNodeInfo, blockDesc: String, fallbackDesc: String) {
-        val currentTime = System.currentTimeMillis()
-
-        // Debounce: Skip if last action was within debounce period
-        if (currentTime - lastActionTime < debounceMillis) return
-
-        val blockedNode = findNodeByDesc(root, blockDesc)
-        if (blockedNode != null) {
-            Log.d(TAG, "Detected Facebook Video tab")
-
-            val fallbackNode = findNodeByDesc(root, fallbackDesc)
-            if (fallbackNode != null) {
-                fallbackNode.performAction(AccessibilityNodeInfo.ACTION_CLICK)
-                Log.d(TAG, "Switched to Home tab")
-            } else {
-                performGlobalAction(GLOBAL_ACTION_BACK)
-                Log.d(TAG, "Fallback: Back action")
-            }
-
-            // Update block timestamp
-            lastActionTime = currentTime
-        }
-    }
-
-
-    private fun findNodeByDesc(node: AccessibilityNodeInfo?, desc: String): AccessibilityNodeInfo? {
-        if (node == null) return null
-        if (node.contentDescription?.toString() == desc) return node
-
-        for (i in 0 until node.childCount) {
-            val found = findNodeByDesc(node.getChild(i), desc)
-            if (found != null) return found
-        }
-        return null
-    }
+    // === Utility Functions ===
 
     private fun currentMinuteOfDay(): Int {
         val now = System.currentTimeMillis()

@@ -51,4 +51,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             dataStoreManager.setFacebookReelsBlocking(enabled)
         }
     }
+    val isFBMarketplaceBlockingEnabled: Flow<Boolean> = dataStoreManager.appSettings.map {
+        it.facebook.marketplaceBlocked
+    }
+
+    fun setFBMarketplaceBlockingEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            dataStoreManager.setFacebookMarketplaceBlocking(enabled)
+        }
+    }
 }

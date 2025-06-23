@@ -50,5 +50,11 @@ class DataStoreManager(context: Context) {
             )
         }
     }
-
+    suspend fun setFacebookMarketplaceBlocking(enabled: Boolean) {
+        dataStore.updateData { currentSettings ->
+            currentSettings.copy(
+                facebook = currentSettings.facebook.copy(marketplaceBlocked = enabled)
+            )
+        }
+    }
 }

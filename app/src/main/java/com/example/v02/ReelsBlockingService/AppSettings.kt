@@ -8,6 +8,15 @@ data class AppSettings(
     val facebook: App = App()
 )
 
+@Serializable
+data class App(
+    val reelsBlocked: Boolean = false,
+    val storiesBlocked: Boolean = false,
+    val exploreBlocked: Boolean = false,
+    val marketplaceBlocked: Boolean = false,
+    val blockedStart: Int = 0,
+    val blockedEnd: Int = 1439
+)
 
 @Serializable
 enum class BlockMode {
@@ -15,12 +24,3 @@ enum class BlockMode {
     REELS,
     STORIES
 }
-
-@Serializable
-data class App(
-    val reelsBlocked: Boolean = false,
-    val storiesBlocked: Boolean = false,
-    val exploreBlocked: Boolean = false,
-    val blockedStart: Int = 0,
-    val blockedEnd: Int = 1439
-)

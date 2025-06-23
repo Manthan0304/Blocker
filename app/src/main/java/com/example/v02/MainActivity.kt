@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        // Handle permission result if needed
+
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -176,6 +176,7 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
     val isStoriesBlockingEnabled by viewModel.isStoriesBlockingEnabled.collectAsState(initial = false)
     val isExploreBlockingEnabled by viewModel.isExploreBlockingEnabled.collectAsState(initial = false)
     val isFBReelsBlockingEnabled by viewModel.isFBReelsBlockingEnabled.collectAsState(initial = false)
+    val isFBMarketplaceBlockingEnabled by viewModel.isFBMarketplaceBlockingEnabled.collectAsState(initial = false)
 
     LazyColumn(
         modifier = Modifier
@@ -238,6 +239,17 @@ fun MainScreen(viewModel: MainViewModel = viewModel()) {
             }
 
             Spacer(modifier = Modifier.height(32.dp))
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+
+            BlockCard(
+                title = "Block Facebook Marketplace",
+                description = "Automatically exits Marketplace tab to minimize distractions.",
+                checked = isFBMarketplaceBlockingEnabled,
+                onToggle = { viewModel.setFBMarketplaceBlockingEnabled(it) }
+            )
+
         }
     }
 }

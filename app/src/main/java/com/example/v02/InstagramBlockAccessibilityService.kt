@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import android.util.Log
 import com.example.v02.ReelsBlockingService.AppSettings
 import com.example.v02.ReelsBlockingService.DataStoreManager
+import kotlinx.coroutines.delay
 import java.util.TimeZone
 
 private const val TAG = "ReelsBlockService"
@@ -56,6 +57,7 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
                 if (isWithinInterval(fb.blockedStart, fb.blockedEnd, nowMin)) {
                     if (fb.reelsBlocked) blockFacebookReels(root)
                     if (fb.marketplaceBlocked) blockFacebookMarketplace(root)
+                    if (fb.storiesBlocked) blockFacebookStories(root)
                 }
             }
         }
@@ -103,6 +105,39 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
             }
         }
     }
+
+    private fun blockFacebookStories(root: AccessibilityNodeInfo) {
+        val possibleViewerIds = listOf(
+            "com.facebook.katana:id/story_viewer",
+            "com.facebook.katana:id/reel_viewer_root"
+        )
+
+        for (viewId in possibleViewerIds) {
+            val viewerNode = root.findAccessibilityNodeInfosByViewId(viewId).firstOrNull()
+            if (viewerNode != null) {
+                lastActionTime = System.currentTimeMillis()
+                Log.d("FB_BLOCKER", "Facebook Story viewer detected via ID: $viewId")
+
+                performGlobalAction(GLOBAL_ACTION_BACK)
+                return
+            }
+        }
+
+        val storyIndicators = listOf("Reply", "Send Message", "Seen by", "Pause")
+        for (indicator in storyIndicators) {
+            val node = findNodeWithText(root, indicator)
+            if (node != null) {
+                lastActionTime = System.currentTimeMillis()
+                Log.d("FB_BLOCKER", "Facebook Story content detected → indicator: $indicator")
+
+                performGlobalAction(GLOBAL_ACTION_BACK)
+                return
+            }
+        }
+    }
+
+
+
 
     private fun findSelectedTab(node: AccessibilityNodeInfo?): AccessibilityNodeInfo? {
         if (node == null) return null
@@ -160,6 +195,20 @@ class InstagramBlockAccessibilityService : AccessibilityService() {
         for (i in 0 until node.childCount) {
             val child = node.getChild(i)
             val result = findNodeByDesc(child, desc)
+            if (result != null) return result
+        }
+        return null
+    }
+
+    private fun findNodeWithText(node: AccessibilityNodeInfo?, text: String): AccessibilityNodeInfo? {
+        if (node == null) return null
+        val nodeText = node.text?.toString()?.trim()
+        if (nodeText != null && nodeText.contains(text, ignoreCase = true)) {
+            return node
+        }
+        for (i in 0 until node.childCount) {
+            val child = node.getChild(i)
+            val result = findNodeWithText(child, text)
             if (result != null) return result
         }
         return null

@@ -1,40 +1,31 @@
 package com.example.v02
 
+import android.Manifest
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.AppOpsManager
+import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.text.TextUtils
+import android.util.Log
+import android.view.accessibility.AccessibilityManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.v02.timelimit.AppMonitoringService
-import com.example.v02.timelimit.Screens.MainScreen
-import com.example.v02.timelimit.Screens.PermissionScreen
-import android.Manifest
-import android.accessibilityservice.AccessibilityServiceInfo
-import android.content.ComponentName
-import android.text.TextUtils
-import android.util.Log
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.delay
-import android.view.accessibility.AccessibilityManager
-import androidx.compose.foundation.lazy.LazyColumn
 import com.example.v02.ReelsBlockingService.MainViewModel
+import com.example.v02.screens.MainAppScreen
+import com.example.v02.timelimit.AppMonitoringService
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -61,7 +52,7 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                MainScreen(viewModel)
+                MainAppScreen(viewModel)
             }
         }
     }

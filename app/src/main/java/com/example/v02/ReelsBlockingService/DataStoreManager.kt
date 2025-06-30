@@ -43,6 +43,7 @@ class DataStoreManager(context: Context) {
             )
         }
     }
+
     suspend fun setFacebookReelsBlocking(enabled: Boolean) {
         dataStore.updateData { current ->
             current.copy(
@@ -50,6 +51,7 @@ class DataStoreManager(context: Context) {
             )
         }
     }
+
     suspend fun setFacebookMarketplaceBlocking(enabled: Boolean) {
         dataStore.updateData { currentSettings ->
             currentSettings.copy(
@@ -57,6 +59,7 @@ class DataStoreManager(context: Context) {
             )
         }
     }
+
     suspend fun setFacebookStoriesBlocking(enabled: Boolean) {
         dataStore.updateData { current ->
             current.copy(
@@ -65,4 +68,95 @@ class DataStoreManager(context: Context) {
         }
     }
 
+    // YouTube methods
+    suspend fun setYouTubeShortsBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                youtube = current.youtube.copy(shortsBlocked = enabled)
+            )
+        }
+    }
+
+    suspend fun setYouTubeCommentsBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                youtube = current.youtube.copy(commentsBlocked = enabled)
+            )
+        }
+    }
+
+    suspend fun setYouTubeSearchBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                youtube = current.youtube.copy(searchBlocked = enabled)
+            )
+        }
+    }
+
+    suspend fun setYouTubeBlockTime(start: Int, end: Int) {
+        dataStore.updateData { current ->
+            current.copy(
+                youtube = current.youtube.copy(blockedStart = start, blockedEnd = end)
+            )
+        }
+    }
+
+    // Twitter methods
+    suspend fun setTwitterExploreBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                twitter = current.twitter.copy(exploreBlocked = enabled)
+            )
+        }
+    }
+
+    suspend fun setTwitterBlockTime(start: Int, end: Int) {
+        dataStore.updateData { current ->
+            current.copy(
+                twitter = current.twitter.copy(blockedStart = start, blockedEnd = end)
+            )
+        }
+    }
+
+    // WhatsApp methods
+    suspend fun setWhatsAppStatusBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                whatsapp = current.whatsapp.copy(statusBlocked = enabled)
+            )
+        }
+    }
+
+    suspend fun setWhatsAppBlockTime(start: Int, end: Int) {
+        dataStore.updateData { current ->
+            current.copy(
+                whatsapp = current.whatsapp.copy(blockedStart = start, blockedEnd = end)
+            )
+        }
+    }
+
+    // Snapchat methods
+    suspend fun setSnapchatSpotlightBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                snapchat = current.snapchat.copy(spotlightBlocked = enabled)
+            )
+        }
+    }
+
+    suspend fun setSnapchatStoriesBlocking(enabled: Boolean) {
+        dataStore.updateData { current ->
+            current.copy(
+                snapchat = current.snapchat.copy(storiesBlocked = enabled)
+            )
+        }
+    }
+
+    suspend fun setSnapchatBlockTime(start: Int, end: Int) {
+        dataStore.updateData { current ->
+            current.copy(
+                snapchat = current.snapchat.copy(blockedStart = start, blockedEnd = end)
+            )
+        }
+    }
 }

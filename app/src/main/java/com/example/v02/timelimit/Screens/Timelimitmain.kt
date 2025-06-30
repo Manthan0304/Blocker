@@ -1,29 +1,21 @@
-package com.example.v02.timelimit.Screens
+package com.example.v02
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.v02.timelimit.Screens.AppLimitsScreen
+import com.example.v02.timelimit.Screens.AppUsageScreen
+import com.example.v02.timelimit.Screens.SetLimitScreen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
@@ -36,28 +28,28 @@ fun MainScreen() {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("App Time Limit") }
-            )
-        },
-        bottomBar = {
-            NavigationBar {
+            TabRow(
+                selectedTabIndex = selectedTab,
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.height(48.dp) // Optional: reduce height
+            ) {
                 tabs.forEachIndexed { index, tab ->
-                    NavigationBarItem(
-                        icon = { Icon(tab.icon, contentDescription = tab.title) },
-                        label = { Text(tab.title) },
+                    Tab(
                         selected = selectedTab == index,
                         onClick = {
                             selectedTab = index
-                            when (index) {
-                                0 -> navController.navigate("apps") {
-                                    popUpTo("apps") { inclusive = true }
+                            navController.navigate(
+                                when (index) {
+                                    0 -> "apps"
+                                    1 -> "limits"
+                                    else -> "apps"
                                 }
-                                1 -> navController.navigate("limits") {
-                                    popUpTo("limits") { inclusive = true }
-                                }
+                            ) {
+                                popUpTo("apps") { inclusive = false }
                             }
-                        }
+                        },
+                        text = { Text(tab.title) },
+                        icon = { Icon(tab.icon, contentDescription = tab.title) }
                     )
                 }
             }
@@ -68,7 +60,7 @@ fun MainScreen() {
             startDestination = "apps",
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues) // ⬅️ important to avoid being overlapped by tabs
         ) {
             composable("apps") {
                 selectedTab = 0
@@ -90,6 +82,7 @@ fun MainScreen() {
         }
     }
 }
+
 
 data class TabItem(
     val title: String,

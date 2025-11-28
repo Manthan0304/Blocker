@@ -7,95 +7,33 @@ Blocker empowers parents to guide and monitor children’s smartphone usage thro
 📌 Built Using: Kotlin · Jetpack Compose · MVVM · Room · AccessibilityService · WorkManager
 
 🚀 Features
-🔒 Digital Controls
 
-Block distracting content like:
+In-App Blocking: Instagram Reels, YouTube Shorts, Snapchat Stories
 
-Instagram Reels
+Screen-Time Control: Daily limits, app lock after quota
 
-YouTube Shorts
+Website & Keyword Blocking
 
-Snapchat Stories
+Parent Mode / Child Mode
 
-App-level screen-time limits
+Usage Analytics: Graphs, session tracking, alerts
 
-Website blocking & keyword-based filtering
-
-Dual Parent Mode & Child Mode
-
-📊 Monitoring & Analytics
-
-Daily and session-based usage tracking
-
-Visual usage graphs & insights
-
-Real-time usage alerts
-
-Session count, logs & activity summaries
-
-⚙️ Reliable Background Enforcement
-
-Built on AccessibilityService for precise in-app blocking
-
-Foreground Service for uninterrupted monitoring
-
-WorkManager for periodic tasks
-
-Battery optimization handling to maintain uptime
-
-Achieves 95%+ stability across physical devices
-
-🎨 Modern UI / UX
-
-Jetpack Compose UI with smooth animations
-
-Clean layout optimized for ease of use
-
-Dark mode support
-
-Simple onboarding for parents & kids
+Runs Reliably in Background: AccessibilityService + Foreground Service
 
 🛠️ Tech Stack
 
-Language:
+Kotlin, Coroutines
 
-Kotlin (Coroutines, Flows)
+Jetpack Compose (Material 3)
 
-UI Layer:
-
-Jetpack Compose
-
-Material 3
-
-Navigation Compose
-
-Architecture:
-
-MVVM (ViewModel + LiveData)
-
-Repository Pattern
-
-Clean modular structure
-
-System Components:
-
-AccessibilityService
-
-Foreground Services
-
-Broadcast Receivers
-
-WorkManager
+MVVM Architecture
 
 Room Database
 
-Tools:
+AccessibilityService, Foreground Service
 
-Android Studio Koala
+WorkManager, Broadcast Receivers
 
-ADB tools for debugging
-
-Firebase Crashlytics (optional if added later)
 
 📸 Screenshots
 
